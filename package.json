@@ -1,0 +1,44 @@
+{
+  "name": "swynex-project-architecture",
+  "version": "1.0.0",
+  "description": "Full-Stack Project Architecture Submission for SWYNEX Technologies Internship Task 1",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push"
+  },
+  "keywords": [
+    "swynex",
+    "internship",
+    "full-stack",
+    "architecture",
+    "nextjs",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "Geeta",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "@tanstack/react-query": "^5.56.0",
+    "lucide-react": "^0.447.0",
+    "next": "^14.2.14",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.16.10",
+    "@types/react": "^18.3.10",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "prisma": "^5.20.0",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2"
+  }
+}

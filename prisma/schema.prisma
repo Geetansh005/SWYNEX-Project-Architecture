@@ -1,0 +1,109 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PostStatus {
+  OPEN
+  UNDER_REVIEW
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  avatarUrl     String?
+  role          Role      @default(USER)
+  boards        Board[]   @relation("BoardOwner")
+  posts         Post[]
+  votes         Vote[]
+  comments      Comment[]
+  createdAt     DateTime  @default(now())
+}
+
+model Board {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  isPublic    Boolean    @default(true)
+  ownerId     String
+  owner       User       @relation("BoardOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  categories  Category[]
+  posts       Post[]
+  createdAt   DateTime   @default(now())
+
+  @@index([slug])
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  boardId   String
+  board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  name      String
+  colorHex  String   @default("#6366F1")
+  posts     Post[]
+
+  @@unique([boardId, name])
+}
+
+model Post {
+  id           String      @id @default(cuid())
+  boardId      String
+  board        Board       @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  authorId     String
+  author       User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categoryId   String?
+  category     Category?   @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  title        String
+  description  String
+  status       PostStatus  @default(OPEN)
+  voteCount    Int         @default(0)
+  commentCount Int         @default(0)
+  isPinned     Boolean     @default(false)
+  votes        Vote[]
+  comments     Comment[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([boardId, status])
+  @@index([boardId, voteCount(sort: Desc)])
+}
+
+model Vote {
+  id        String   @id @default(cuid())
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([postId, userId])
+  @@index([postId])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  postId     String
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId   String
+  author     User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content    String
+  isInternal Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([postId, createdAt])
+}
